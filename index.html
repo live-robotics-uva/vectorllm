@@ -3,8 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="VectorLLM project website outline">
-    <title>VectorLLM — Project Website Outline</title>
+    <meta name="description"
+          content="VectorLLM: Language-Controllable Autonomous Driving via Vectorized Scene Grounding">
+    <meta name="keywords"
+          content="LLM-based driving, vectorized scene representation, language grounding, language control">
+    <title>VectorLLM: Language-Controllable Autonomous Driving via Vectorized Scene Grounding</title>
     <link rel="stylesheet" href="static/css/index.css">
   </head>
   <body>
@@ -26,14 +29,16 @@
     <main id="top">
       <section class="hero section">
         <div class="container narrow">
-          <p class="eyebrow">Project website outline</p>
-          <h1>[Project title]</h1>
-          <p class="lede">[One-sentence project summary]</p>
-          <p class="byline">[Authors] · [Affiliation]</p>
+          <p class="eyebrow">Anonymous submission · CoRL 2026</p>
+          <h1>VectorLLM: Language-Controllable Autonomous Driving via Vectorized Scene Grounding</h1>
+          <p class="lede">
+            A unified vector-language interface that represents map geometry and agent motion as
+            discrete tokens for grounded reasoning, trajectory generation, and language-controllable
+            autonomous driving.
+          </p>
+          <p class="byline">Anonymous Author(s)</p>
           <div class="actions" aria-label="Project links">
-            <a class="button" href="static/papers/vectorllm.pdf">[Paper]</a>
-            <a class="button secondary" href="#">[Code]</a>
-            <a class="button secondary" href="#">[Data / Demo]</a>
+            <a class="button" href="static/papers/vectorllm.pdf">Paper PDF</a>
           </div>
           <div class="media-slot" role="img" aria-label="Placeholder for a project teaser visual">
             [Teaser visual]
@@ -45,7 +50,26 @@
         <div class="container narrow">
           <p class="eyebrow">01</p>
           <h2>Abstract</h2>
-          <p class="placeholder">[Abstract content]</p>
+          <p>
+            Natural language provides a flexible interface for humans to interact with autonomous
+            vehicles. However, the effectiveness of this interaction relies on a driving model’s
+            language grounding and controllability. Recent works have leveraged vision-language
+            models (VLMs) as backbones but are still limited in grounding driving scenes with
+            language. We present VectorLLM, a vectorized paradigm that grounds vectorized driving
+            scenes with pretrained large language models (LLMs). The vectorized agent motions and
+            map elements are represented as discrete tokens and learned to align with language in
+            the LLM’s latent space. This approach directly incorporates driving information into
+            LLMs to utilize pretrained LLM capabilities, e.g., chain-of-thought reasoning and
+            language generation, to reason about and plan in a vectorized driving scene. We conduct
+            extensive experiments with the Waymo Open Motion dataset and nuScenes dataset across
+            multiple tasks, including trajectory prediction, question answering, and controllability
+            under counterfactual scenes and instructions. We show that VectorLLM can leverage
+            low-level driving information to generate trajectories and outperform existing LLMs/VLMs
+            in WOMD-Reasoning and nuScenes-QA, demonstrating improved grounding. More importantly,
+            VectorLLM demonstrates superior controllability compared to alternative models when
+            responding to changes in scenes and counterfactual language instructions, offering an
+            effective language interface for controllable driving interactions.
+          </p>
         </div>
       </section>
 
@@ -56,8 +80,14 @@
           <div class="content-grid">
             <div class="media-slot">[Overview figure]</div>
             <div class="placeholder-block">
-              <h3>[Overview takeaway]</h3>
-              <p class="placeholder">[Explain the problem, motivation, and high-level contribution.]</p>
+              <h3>Grounding language directly in vectorized driving scenes</h3>
+              <p>
+                VectorLLM discretizes road geometry and agent motion into vector tokens and
+                serializes them with language prompts in one sequence. Fine-tuning aligns the
+                vector and language tokens in the LLM’s latent space, enabling one model to answer
+                driving questions, reason about traffic context, generate trajectories, and respond
+                to counterfactual scene changes or language instructions.
+              </p>
             </div>
           </div>
         </div>
@@ -69,10 +99,22 @@
           <h2>Method / System Design</h2>
           <div class="media-slot">[Architecture diagram]</div>
           <div class="placeholder-block">
-            <h3>[Component or stage 1]</h3>
-            <p class="placeholder">[Component description]</p>
-            <h3>[Component or stage 2]</h3>
-            <p class="placeholder">[Component description]</p>
+            <h3>Vectorization and tokenization</h3>
+            <p>
+              Static map elements and dynamic agent histories are transformed into the ego frame
+              and represented as ordered two-dimensional displacement vectors. Continuous vectors
+              are discretized using a 1,024-token scene vocabulary built with k-disks clustering.
+              Semantic marker and delimiter tokens identify maps, ego motion, and other agents,
+              while beam-search assignment reduces reconstruction drift along road polylines.
+            </p>
+            <h3>Expanded LLM vocabulary and grounded reasoning</h3>
+            <p>
+              VectorLLM expands a pretrained decoder-only LLM’s input embeddings and output head
+              with vector and special tokens. It uses no separate map encoder, motion encoder, or
+              projection layer. Chain-of-thought supervision selects relevant scene elements before
+              producing an answer or trajectory; trajectory targets use goal conditioning and
+              bidirectional attention for parallel decoding.
+            </p>
           </div>
         </div>
       </section>
@@ -80,9 +122,17 @@
       <section class="section tinted" id="process">
         <div class="container narrow">
           <p class="eyebrow">04</p>
-          <h2>Execution / Generation Process</h2>
+          <h2>Training and Generation Process</h2>
           <div class="media-slot">[Process animation or sequence]</div>
-          <p class="placeholder">[Describe the end-to-end process.]</p>
+          <p>
+            Training uses two stages with all model parameters trainable. Stage I performs
+            next-token prediction over serialized vectorized scenes so the pretrained LLM learns
+            map and motion structures as token sequences. Stage II jointly fine-tunes question
+            answering, goal prediction, and trajectory generation. At inference time, the same
+            serialized context supports language answers, intermediate goals, and trajectories;
+            trajectory tokens are mapped back to displacement centroids and accumulated into metric
+            coordinates.
+          </p>
         </div>
       </section>
 
@@ -90,7 +140,22 @@
         <div class="container narrow">
           <p class="eyebrow">05</p>
           <h2>Benchmarks &amp; Tasks</h2>
-          <div class="table-slot">[Benchmark and task summary table]</div>
+          <div class="table-slot">
+            <div>
+              <p><strong>Datasets:</strong> Waymo Open Motion Dataset (WOMD) and nuScenes.</p>
+              <p>
+                <strong>Tasks:</strong> trajectory prediction, question answering, scene-edit
+                controllability, and instruction controllability.
+              </p>
+              <p>
+                <strong>Grounding benchmarks:</strong> WOMD-Reasoning and nuScenes-QA.
+              </p>
+              <p>
+                <strong>Input settings:</strong> HD-map vectors and a perception-based
+                VectorLLM+MapTR variant using vectorized maps predicted from multiview images.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -98,7 +163,24 @@
         <div class="container narrow">
           <p class="eyebrow">06</p>
           <h2>Results</h2>
-          <div class="table-slot">[Main quantitative results]</div>
+          <div class="table-slot">
+            <div>
+              <p>
+                <strong>Language grounding:</strong> VectorLLM reaches 61.0% Acc<sub>1.0</sub>
+                and 0.804 ROUGE on WOMD-Reasoning, and 63.5% overall accuracy on nuScenes-QA.
+              </p>
+              <p>
+                <strong>Counterfactual control:</strong> It achieves a 62.5% overall goal hit rate
+                on WOMD scene edits and a 75.4% average goal hit rate under nuScenes language
+                instructions.
+              </p>
+              <p>
+                <strong>Trajectory prediction:</strong> On WOMD, VectorLLM reports 0.92 minADE,
+                0.25 miss rate, and 0.34 mAP. On nuScenes, it reports 0.39 L2 error and 0.17
+                collision rate.
+              </p>
+            </div>
+          </div>
           <div class="content-grid">
             <div class="media-slot">[Qualitative result 1]</div>
             <div class="media-slot">[Qualitative result 2]</div>
@@ -109,21 +191,46 @@
       <section class="section" id="experiments">
         <div class="container narrow">
           <p class="eyebrow">07</p>
-          <h2>Real-World / Qualitative Experiments</h2>
+          <h2>Qualitative Analysis</h2>
           <div class="content-grid">
             <div class="media-slot">[Experiment group 1]</div>
             <div class="media-slot">[Experiment group 2]</div>
           </div>
-          <p class="placeholder">[Experiment notes and limitations]</p>
+          <p>
+            Attention visualizations and t-SNE embeddings indicate that language tokens align with
+            relevant map and trajectory tokens. The reported attention patterns also shift with
+            counterfactual instructions, supporting the paper’s claim that the model grounds
+            language in scene structure rather than relying only on fluent language generation.
+          </p>
         </div>
       </section>
 
       <section class="section tinted" id="efficiency">
         <div class="container narrow">
           <p class="eyebrow">08</p>
-          <h2>Design Choices &amp; Efficiency</h2>
-          <div class="table-slot">[Ablation, scaling, or efficiency table]</div>
-          <p class="placeholder">[Interpret the design trade-offs.]</p>
+          <h2>Design Choices, Ablations &amp; Limitations</h2>
+          <div class="table-slot">
+            <div>
+              <p>
+                <strong>Full VectorLLM:</strong> 0.92 minADE, 2.06 minFDE, 61.0%
+                QA Acc<sub>1.0</sub>, and 0.804 ROUGE.
+              </p>
+              <p>
+                <strong>Corrupted chain of thought:</strong> 1.19 minADE, 2.54 minFDE,
+                53.7% QA Acc<sub>1.0</sub>, and 0.715 ROUGE.
+              </p>
+              <p>
+                <strong>Without chain of thought:</strong> 1.31 minADE, 2.75 minFDE,
+                51.2% QA Acc<sub>1.0</sub>, and 0.712 ROUGE.
+              </p>
+            </div>
+          </div>
+          <p>
+            The paper identifies four main limitations: VectorLLM is not jointly trained with raw
+            visual perception; QA can struggle to localize temporal boundaries; trajectory errors
+            may accumulate in fast-moving scenes; and large counterfactual deviations can be
+            resisted by learned behavioral priors.
+          </p>
         </div>
       </section>
 
@@ -131,14 +238,15 @@
         <div class="container narrow">
           <p class="eyebrow">09</p>
           <h2>Citation</h2>
-          <pre class="code-slot"><code>[BibTeX entry]</code></pre>
+          <pre class="code-slot"><code>VectorLLM: Language-Controllable Autonomous Driving via Vectorized Scene Grounding.
+Anonymous submission to the 10th Conference on Robot Learning (CoRL), 2026.</code></pre>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
       <div class="container">
-        <p>[Project footer, license, and contact links]</p>
+        <p>VectorLLM · Anonymous submission to CoRL 2026</p>
       </div>
     </footer>
 
