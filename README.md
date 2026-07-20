@@ -1,31 +1,34 @@
-# VectorLLM: Language-Controllable Autonomous Driving via Vectorized Scene Grounding
+# VectorLLM
 
-This repository contains the project website for VectorLLM, a unified
-vector-language interface that represents map geometry and agent motion as
-discrete tokens for grounded reasoning, trajectory generation, and
-language-controllable autonomous driving.
+Project website for **VectorLLM: Language-Controllable Autonomous Driving via
+Vectorized Scene Grounding**.
 
-The current manuscript is an anonymous submission to the 10th Conference on
-Robot Learning (CoRL 2026). The website text follows the uploaded manuscript;
-media and qualitative-example slots remain placeholders.
+VectorLLM represents vectorized map geometry and agent motion as discrete tokens
+inside a pretrained language model. The shared vector-language token sequence
+supports driving-scene reasoning, question answering, trajectory generation,
+and controllable behavior under scene edits and language instructions.
 
 ## Paper
 
-The manuscript is located at `static/papers/vectorllm.pdf`.
+The paper is available at `static/papers/vectorllm.pdf`.
 
-## Site outline
+## Website content
 
-- Hero: project title, anonymous submission status, and paper link
-- Abstract
-- Project overview
-- Method / system design
-- Execution or generation process
-- Benchmarks and tasks
-- Comparative results
-- Qualitative analysis
-- Design choices, ablations, and limitations
-- Citation
+- Motivation and contributions
+- Scene vectorization and tokenization
+- LLM architecture and trajectory generation
+- Training and grounded supervision generation
+- Evaluation tasks and datasets
+- Language-grounding results
+- Scene-edit and language-instruction controllability
+- Trajectory-forecasting results
+- Chain-of-thought, grounding, and scaling analyses
+- Limitations
 
 ## Local preview
 
-Serve this directory with any static HTTP server and open `index.html`.
+```bash
+python3 -m http.server 8000
+```
+
+Open `http://localhost:8000`.
