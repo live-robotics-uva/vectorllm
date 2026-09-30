@@ -4,151 +4,173 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description"
-          content="VectorLLM represents driving scenes as discrete vector tokens for grounded question answering and language-controlled driving.">
+          content="VectorLLM grounds language in vectorized driving scenes for question answering and controllable autonomous driving.">
     <title>VectorLLM: Language-Controllable Autonomous Driving via Vectorized Scene Grounding</title>
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
     <link rel="stylesheet" href="static/css/index.css">
   </head>
   <body>
-    <header class="page-header" id="top">
-      <div class="content">
-        <h1>VectorLLM: Language-Controllable Autonomous Driving via Vectorized Scene Grounding</h1>
-        <p class="tagline">Grounding language in vectorized maps, agents, and trajectories for controllable driving.</p>
-        <p class="paper-links">
-          <a href="static/papers/vectorllm.pdf">Paper (PDF)</a>
-          <a href="#examples">See examples</a>
-        </p>
-      </div>
-    </header>
-
-    <nav class="site-nav" aria-label="Page sections">
-      <div class="content">
-        <a href="#abstract">Abstract</a>
-        <a href="#examples">Examples</a>
-        <a href="#method">How it works</a>
-        <a href="#results">Results</a>
-        <a href="#limitations">Limitations</a>
-      </div>
-    </nav>
-
-    <main class="content">
-      <section id="abstract">
-        <h2>Abstract</h2>
-        <p>
-          Language-controlled driving depends on connecting instructions to road geometry and the
-          motion of nearby agents. VectorLLM represents map and motion vectors as discrete tokens
-          in a pretrained language model, so scene structure and text share one sequence. The model
-          uses that sequence to answer questions and generate trajectories. On WOMD and nuScenes,
-          it improves driving question answering and follows held-out changes to scenes and
-          instructions. Comparisons with continuous scene representations show that the discrete
-          token interface contributes to these gains.
-        </p>
-      </section>
-
-      <section id="examples">
-        <h2>Examples</h2>
-        <h3>Questions about a driving scene</h3>
-        <div class="qa-layout">
-          <figure>
-            <img src="static/examples/qa-turn-attention.jpg"
-                 alt="Bird's-eye view of an intersection with the ego vehicle's route and highlighted scene locations used for a turn question."
-                 loading="lazy">
-            <figcaption>
-              A turn-question example. Pink markers show locations receiving high attention in the
-              model visualization.
-            </figcaption>
-          </figure>
-          <div>
-            <p>For the scene shown, VectorLLM answers questions about the ego vehicle and nearby traffic.</p>
-            <dl class="qa-list">
-              <div>
-                <dt>Question</dt>
-                <dd>Does the ego vehicle make any turns?</dd>
-                <dt>Generated answer</dt>
-                <dd>Yes. The ego car turns left from 4.1 to 9.0 seconds.</dd>
+    <section class="hero publication-header">
+      <div class="hero-body">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column has-text-centered">
+              <h1 class="title is-1 publication-title">
+                VectorLLM: Language-Controllable Autonomous Driving via Vectorized Scene Grounding
+              </h1>
+              <p class="publication-venue">ICRA 2027 · Submission 5392</p>
+              <div class="publication-links">
+                <span class="link-block">
+                  <a class="button is-normal is-rounded is-dark" href="static/papers/vectorllm.pdf">
+                    <span>Paper</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a class="button is-normal is-rounded is-dark" href="#examples">
+                    <span>Examples</span>
+                  </a>
+                </span>
               </div>
-              <div>
-                <dt>Question</dt>
-                <dd>Does the ego car encounter an intersection?</dd>
-                <dt>Generated answer</dt>
-                <dd>Yes. It passes an intersection from 2.6 to 7.2 seconds.</dd>
-              </div>
-              <div>
-                <dt>Question</dt>
-                <dd>Are any other agents moving like the ego vehicle?</dd>
-                <dt>Generated answer</dt>
-                <dd>Yes. Agents 7 and 12 are turning left, like the ego car.</dd>
-              </div>
-            </dl>
+            </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <h3>Changing the instruction changes the planned motion</h3>
-        <p>
-          The scene stays the same while the requested maneuver changes. The visualizations show
-          different predicted paths and attended scene locations for the two instructions.
-        </p>
-        <div class="instruction-pair">
-          <figure>
-            <img src="static/examples/original-left-turn.jpg"
-                 alt="Bird's-eye intersection scene showing the model response to an instruction to enter and turn left."
-                 loading="lazy">
-            <figcaption>
-              <strong>Instruction:</strong> The ego car enters the intersection and makes a left turn.
-            </figcaption>
-          </figure>
-          <figure>
-            <img src="static/examples/counterfactual-slow-turn.jpg"
-                 alt="The same intersection scene with a changed predicted path after asking the ego car to slow before turning."
-                 loading="lazy">
-            <figcaption>
-              <strong>Counterfactual instruction:</strong> The ego car slows down before turning at the intersection.
-            </figcaption>
-          </figure>
+    <section class="section" id="abstract">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths">
+            <h2 class="title is-3">Abstract</h2>
+            <div class="content has-text-justified">
+              <p>
+                Language-controlled driving depends on connecting instructions to road geometry
+                and the motion of nearby agents. VectorLLM represents map and motion vectors as
+                discrete tokens in a pretrained language model, so scene structure and text share
+                one sequence. The model uses that sequence to answer questions and generate
+                trajectories. On WOMD and nuScenes, it improves driving question answering and
+                follows held-out changes to scenes and instructions. Comparisons with continuous
+                scene representations show that the discrete token interface contributes to
+                these gains.
+              </p>
+            </div>
+          </div>
         </div>
+      </div>
+    </section>
 
-        <h3>Descriptions of unseen scenes</h3>
-        <p>These captions are qualitative examples; scene captioning was not a training task.</p>
-        <div class="caption-examples">
-          <figure>
-            <img src="static/examples/caption-intersection.jpg"
-                 alt="Bird's-eye intersection scene with the ego vehicle waiting for oncoming traffic."
-                 loading="lazy">
-            <figcaption>“The ego vehicle waits before the intersection for oncoming vehicles, likely preparing for a left turn.”</figcaption>
-          </figure>
-          <figure>
-            <img src="static/examples/caption-cyclists.jpg"
-                 alt="Bird's-eye scene with the ego vehicle following traffic near several cyclists."
-                 loading="lazy">
-            <figcaption>“The ego vehicle follows the vehicle ahead while approaching the intersection, with several cyclists nearby.”</figcaption>
-          </figure>
-          <figure>
-            <img src="static/examples/caption-pedestrians.jpg"
-                 alt="Bird's-eye neighborhood scene with pedestrians crossing in front of a stopped ego vehicle."
-                 loading="lazy">
-            <figcaption>“The ego vehicle remains stopped while a group of pedestrians crosses the road.”</figcaption>
-          </figure>
+    <section class="hero teaser" id="examples">
+      <div class="container is-max-desktop">
+        <div class="hero-body">
+          <h2 class="title is-3">Question answering on driving scenes</h2>
+          <div class="content has-text-centered">
+            <figure>
+              <img class="qa-example-image" src="static/examples/qa-turn-attention.jpg"
+                   alt="Bird's-eye driving scene at an intersection, with the ego route and model attention locations highlighted."
+                   loading="lazy">
+              <figcaption>
+                Scene and attention visualization for a question about the ego vehicle's turn.
+              </figcaption>
+            </figure>
+          </div>
+          <div class="content has-text-justified qa-answers">
+            <p><strong>Question:</strong> Does the ego vehicle make any turns?<br>
+               <strong>Generated answer:</strong> Yes. The ego car turns left from 4.1 to 9.0 seconds.</p>
+            <p><strong>Question:</strong> Does the ego car encounter an intersection?<br>
+               <strong>Generated answer:</strong> Yes. It passes an intersection from 2.6 to 7.2 seconds.</p>
+            <p><strong>Question:</strong> Are any other agents moving like the ego vehicle?<br>
+               <strong>Generated answer:</strong> Yes. Agents 7 and 12 are turning left, like the ego car.</p>
+          </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="method">
-        <h2>How it works</h2>
-        <p>
-          VectorLLM converts map polylines and vehicle histories into ordered displacement vectors,
-          then quantizes them into a vocabulary of 1,024 scene tokens. These tokens are added to a
-          pretrained decoder-only language model and placed in the same sequence as the question or
-          instruction.
-        </p>
-        <p>
-          The model generates a language answer or future trajectory from this shared context. It
-          does not use a separate scene encoder or a scene-to-language projection module. For
-          trajectories, vector tokens are decoded back into positions.
-        </p>
-      </section>
+    <section class="section" id="control">
+      <div class="container is-max-desktop">
+        <h2 class="title is-3">Following a changed instruction</h2>
+        <div class="content has-text-justified">
+          <p>
+            The scene stays the same while the requested maneuver changes. The examples visualize
+            different predicted paths and attended scene locations for each instruction.
+          </p>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <figure class="content has-text-centered">
+              <img src="static/examples/original-left-turn.jpg"
+                   alt="Intersection scene showing the response to an instruction to enter and turn left."
+                   loading="lazy">
+              <figcaption><strong>Instruction:</strong> The ego car enters the intersection and makes a left turn.</figcaption>
+            </figure>
+          </div>
+          <div class="column">
+            <figure class="content has-text-centered">
+              <img src="static/examples/counterfactual-slow-turn.jpg"
+                   alt="The same intersection with a changed path after asking the ego vehicle to slow before turning."
+                   loading="lazy">
+              <figcaption><strong>Counterfactual instruction:</strong> The ego car slows down before turning at the intersection.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      <section id="results">
-        <h2>Selected results</h2>
-        <div class="table-scroll">
-          <table>
+    <section class="section" id="captions">
+      <div class="container is-max-desktop">
+        <h2 class="title is-3">Describing unseen scenes</h2>
+        <div class="content has-text-justified">
+          <p>Scene captioning was not a training task; these are qualitative examples.</p>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <figure class="content has-text-centered">
+              <img src="static/examples/caption-intersection.jpg"
+                   alt="Bird's-eye intersection scene with the ego vehicle waiting for oncoming traffic."
+                   loading="lazy">
+              <figcaption>“The ego vehicle waits before the intersection for oncoming vehicles, likely preparing for a left turn.”</figcaption>
+            </figure>
+          </div>
+          <div class="column">
+            <figure class="content has-text-centered">
+              <img src="static/examples/caption-cyclists.jpg"
+                   alt="Bird's-eye scene with the ego vehicle following traffic near several cyclists."
+                   loading="lazy">
+              <figcaption>“The ego vehicle follows the vehicle ahead while approaching the intersection, with several cyclists nearby.”</figcaption>
+            </figure>
+          </div>
+          <div class="column">
+            <figure class="content has-text-centered">
+              <img src="static/examples/caption-pedestrians.jpg"
+                   alt="Bird's-eye neighborhood scene with pedestrians crossing in front of a stopped ego vehicle."
+                   loading="lazy">
+              <figcaption>“The ego vehicle remains stopped while a group of pedestrians crosses the road.”</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="method">
+      <div class="container is-max-desktop">
+        <h2 class="title is-3">Method</h2>
+        <div class="content has-text-justified">
+          <p>
+            VectorLLM converts map polylines and vehicle histories into ordered displacement
+            vectors, then quantizes them into a vocabulary of 1,024 scene tokens. These tokens are
+            added to a pretrained decoder-only language model and placed in the same sequence as
+            the question or instruction. The model generates a language answer or future trajectory
+            from this shared context, without a separate scene encoder or projection module.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="results">
+      <div class="container is-max-desktop">
+        <h2 class="title is-3">Selected results</h2>
+        <div class="table-container">
+          <table class="table is-fullwidth is-striped research-table">
             <thead>
               <tr><th>Evaluation</th><th>Metric</th><th>VectorLLM</th><th>Comparison</th></tr>
             </thead>
@@ -160,25 +182,31 @@
             </tbody>
           </table>
         </div>
-        <p class="note">
-          Scene-edit and language-steering scores are open-loop best-of-six reachability: a predicted
-          path succeeds if it comes within 1 m of the annotated target. nuScenes-QA methods use
-          different input modalities.
+        <p class="table-caption has-text-centered">
+          Counterfactual reachability is open-loop best-of-six: a prediction succeeds when it comes
+          within 1 m of the annotated target. nuScenes-QA methods use different input modalities.
         </p>
-      </section>
+      </div>
+    </section>
 
-      <section id="limitations">
-        <h2>Limitations</h2>
-        <p>
-          The method expects vectorized maps and agent histories. The counterfactual results measure
-          open-loop waypoint reachability, not closed-loop driving safety. Attention maps and scene
-          captions are qualitative examples rather than causal explanations or scored benchmarks.
-        </p>
-      </section>
-    </main>
+    <section class="section" id="limitations">
+      <div class="container is-max-desktop">
+        <h2 class="title is-3">Limitations</h2>
+        <div class="content has-text-justified">
+          <p>
+            VectorLLM expects vectorized maps and agent histories. Its counterfactual evaluations
+            measure open-loop waypoint reachability rather than closed-loop driving safety.
+            Attention visualizations and scene captions are qualitative examples, not causal
+            explanations or scored benchmarks.
+          </p>
+        </div>
+      </div>
+    </section>
 
-    <footer class="content site-footer">
-      <p>VectorLLM · <a href="static/papers/vectorllm.pdf">Read the paper</a></p>
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p>VectorLLM · <a href="static/papers/vectorllm.pdf">Paper PDF</a></p>
+      </div>
     </footer>
   </body>
 </html>
