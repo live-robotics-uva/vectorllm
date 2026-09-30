@@ -4,453 +4,181 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description"
-          content="VectorLLM represents driving scenes as discrete vector tokens in an LLM for grounded question answering and controllable autonomous driving.">
-    <meta name="keywords"
-          content="VectorLLM, autonomous driving, large language models, vector tokens, language grounding, controllable driving">
-    <title>VectorLLM — Language-Controllable Autonomous Driving via Vectorized Scene Grounding</title>
+          content="VectorLLM represents driving scenes as discrete vector tokens for grounded question answering and language-controlled driving.">
+    <title>VectorLLM: Language-Controllable Autonomous Driving via Vectorized Scene Grounding</title>
     <link rel="stylesheet" href="static/css/index.css">
   </head>
   <body>
-    <header class="site-header">
-      <nav class="container nav" aria-label="Primary navigation">
-        <a class="brand" href="#top">VectorLLM</a>
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-links">
-          Menu
-        </button>
-        <div id="site-links" class="nav-links">
-          <a href="#overview">Why VectorLLM</a>
-          <a href="#method">How it works</a>
-          <a href="#evaluation">Evaluation</a>
-          <a href="#results">Results</a>
-          <a href="#analysis">What matters</a>
-          <a href="#limitations">Limitations</a>
-        </div>
-      </nav>
+    <header class="page-header" id="top">
+      <div class="content">
+        <h1>VectorLLM: Language-Controllable Autonomous Driving via Vectorized Scene Grounding</h1>
+        <p class="tagline">Grounding language in vectorized maps, agents, and trajectories for controllable driving.</p>
+        <p class="paper-links">
+          <a href="static/papers/vectorllm.pdf">Paper (PDF)</a>
+          <a href="#examples">See examples</a>
+        </p>
+      </div>
     </header>
 
-    <main id="top">
-      <section class="hero section">
-        <div class="container narrow">
-          <p class="eyebrow">A native token interface for driving scenes</p>
-          <h1>VectorLLM</h1>
-          <p class="subtitle">
-            Language-Controllable Autonomous Driving via Vectorized Scene Grounding
-          </p>
-          <p class="lede">
-            VectorLLM turns road geometry and agent motion into discrete tokens an LLM can read
-            alongside language. The result is one model that answers questions about a scene and
-            adapts its planned motion when the scene or instruction changes.
-          </p>
-          <div class="actions">
-            <a class="button" href="static/papers/vectorllm.pdf">Read the paper</a>
+    <nav class="site-nav" aria-label="Page sections">
+      <div class="content">
+        <a href="#abstract">Abstract</a>
+        <a href="#examples">Examples</a>
+        <a href="#method">How it works</a>
+        <a href="#results">Results</a>
+        <a href="#limitations">Limitations</a>
+      </div>
+    </nav>
+
+    <main class="content">
+      <section id="abstract">
+        <h2>Abstract</h2>
+        <p>
+          Language-controlled driving depends on connecting instructions to road geometry and the
+          motion of nearby agents. VectorLLM represents map and motion vectors as discrete tokens
+          in a pretrained language model, so scene structure and text share one sequence. The model
+          uses that sequence to answer questions and generate trajectories. On WOMD and nuScenes,
+          it improves driving question answering and follows held-out changes to scenes and
+          instructions. Comparisons with continuous scene representations show that the discrete
+          token interface contributes to these gains.
+        </p>
+      </section>
+
+      <section id="examples">
+        <h2>Examples</h2>
+        <h3>Questions about a driving scene</h3>
+        <div class="qa-layout">
+          <figure>
+            <img src="static/examples/qa-turn-attention.jpg"
+                 alt="Bird's-eye view of an intersection with the ego vehicle's route and highlighted scene locations used for a turn question."
+                 loading="lazy">
+            <figcaption>
+              A turn-question example. Pink markers show locations receiving high attention in the
+              model visualization.
+            </figcaption>
+          </figure>
+          <div>
+            <p>For the scene shown, VectorLLM answers questions about the ego vehicle and nearby traffic.</p>
+            <dl class="qa-list">
+              <div>
+                <dt>Question</dt>
+                <dd>Does the ego vehicle make any turns?</dd>
+                <dt>Generated answer</dt>
+                <dd>Yes. The ego car turns left from 4.1 to 9.0 seconds.</dd>
+              </div>
+              <div>
+                <dt>Question</dt>
+                <dd>Does the ego car encounter an intersection?</dd>
+                <dt>Generated answer</dt>
+                <dd>Yes. It passes an intersection from 2.6 to 7.2 seconds.</dd>
+              </div>
+              <div>
+                <dt>Question</dt>
+                <dd>Are any other agents moving like the ego vehicle?</dd>
+                <dt>Generated answer</dt>
+                <dd>Yes. Agents 7 and 12 are turning left, like the ego car.</dd>
+              </div>
+            </dl>
           </div>
-          <ul class="tag-list" aria-label="Paper scope">
-            <li>Discrete scene tokens</li>
-            <li>WOMD and nuScenes</li>
-            <li>Grounded QA and controllable motion</li>
-          </ul>
+        </div>
+
+        <h3>Changing the instruction changes the planned motion</h3>
+        <p>
+          The scene stays the same while the requested maneuver changes. The visualizations show
+          different predicted paths and attended scene locations for the two instructions.
+        </p>
+        <div class="instruction-pair">
+          <figure>
+            <img src="static/examples/original-left-turn.jpg"
+                 alt="Bird's-eye intersection scene showing the model response to an instruction to enter and turn left."
+                 loading="lazy">
+            <figcaption>
+              <strong>Instruction:</strong> The ego car enters the intersection and makes a left turn.
+            </figcaption>
+          </figure>
+          <figure>
+            <img src="static/examples/counterfactual-slow-turn.jpg"
+                 alt="The same intersection scene with a changed predicted path after asking the ego car to slow before turning."
+                 loading="lazy">
+            <figcaption>
+              <strong>Counterfactual instruction:</strong> The ego car slows down before turning at the intersection.
+            </figcaption>
+          </figure>
+        </div>
+
+        <h3>Descriptions of unseen scenes</h3>
+        <p>These captions are qualitative examples; scene captioning was not a training task.</p>
+        <div class="caption-examples">
+          <figure>
+            <img src="static/examples/caption-intersection.jpg"
+                 alt="Bird's-eye intersection scene with the ego vehicle waiting for oncoming traffic."
+                 loading="lazy">
+            <figcaption>“The ego vehicle waits before the intersection for oncoming vehicles, likely preparing for a left turn.”</figcaption>
+          </figure>
+          <figure>
+            <img src="static/examples/caption-cyclists.jpg"
+                 alt="Bird's-eye scene with the ego vehicle following traffic near several cyclists."
+                 loading="lazy">
+            <figcaption>“The ego vehicle follows the vehicle ahead while approaching the intersection, with several cyclists nearby.”</figcaption>
+          </figure>
+          <figure>
+            <img src="static/examples/caption-pedestrians.jpg"
+                 alt="Bird's-eye neighborhood scene with pedestrians crossing in front of a stopped ego vehicle."
+                 loading="lazy">
+            <figcaption>“The ego vehicle remains stopped while a group of pedestrians crosses the road.”</figcaption>
+          </figure>
         </div>
       </section>
 
-      <section class="section tinted" id="abstract">
-        <div class="container narrow">
-          <p class="eyebrow">Abstract</p>
-          <h2>Ground driving language in precise scene structure</h2>
-          <p>
-            Language is useful for interacting with a vehicle only when the model can connect
-            instructions to the road and traffic around it—and change its behavior when either
-            changes. Existing driving LLMs often pass scenes through images, continuous features,
-            or text descriptions. VectorLLM instead discretizes map geometry and agent motion into
-            vector tokens and adds them to a pretrained decoder-only LLM’s vocabulary. Across
-            WOMD and nuScenes, it improves driving question answering and responds to human-annotated
-            counterfactual scene edits and instructions, without training on those counterfactual
-            evaluations. Representation ablations show that keeping scene vectors as discrete LLM
-            tokens is important to these gains.
-          </p>
-        </div>
+      <section id="method">
+        <h2>How it works</h2>
+        <p>
+          VectorLLM converts map polylines and vehicle histories into ordered displacement vectors,
+          then quantizes them into a vocabulary of 1,024 scene tokens. These tokens are added to a
+          pretrained decoder-only language model and placed in the same sequence as the question or
+          instruction.
+        </p>
+        <p>
+          The model generates a language answer or future trajectory from this shared context. It
+          does not use a separate scene encoder or a scene-to-language projection module. For
+          trajectories, vector tokens are decoded back into positions.
+        </p>
       </section>
 
-      <section class="section" id="overview">
-        <div class="container">
-          <p class="eyebrow">The problem</p>
-          <h2>Driving language needs a precise scene representation</h2>
-          <p class="section-intro">
-            An instruction such as “yield to the car ahead” depends on who is ahead, how fast they
-            are moving, and where the road goes. Compressing that structure into visual features or
-            prose can make precise geometry and interactions harder for an LLM to use. VectorLLM
-            represents those scene elements directly in the same discrete sequence as language.
-          </p>
-
-          <div class="cards">
-            <article class="card">
-              <span class="card-number">01</span>
-              <h3>Unified representation</h3>
-              <p>
-                Map geometry, ego and agent histories, language prompts, and generated motion share
-                one token vocabulary and sequence.
-              </p>
-            </article>
-            <article class="card">
-              <span class="card-number">02</span>
-              <h3>Grounded reasoning</h3>
-              <p>
-                Reasoning traces select scene evidence relevant to a question or maneuver, linking
-                language to the map and motion tokens in context.
-              </p>
-            </article>
-            <article class="card">
-              <span class="card-number">03</span>
-              <h3>Language control</h3>
-              <p>
-                Generated trajectories adapt to edited lane geometry, changed traffic, ego history,
-                and alternative language instructions.
-              </p>
-            </article>
-          </div>
+      <section id="results">
+        <h2>Selected results</h2>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Evaluation</th><th>Metric</th><th>VectorLLM</th><th>Comparison</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>WOMD-Reasoning QA</td><td>Accuracy within 1 m</td><td>61.0%</td><td>Motion-LLaVA: 56.2%</td></tr>
+              <tr><td>nuScenes-QA</td><td>Overall accuracy</td><td>63.5%</td><td>OpenDriveVLA-0.5B: 58.4%</td></tr>
+              <tr><td>WOMD scene edits</td><td>Target reachability</td><td>64.7%</td><td>MTR: 53.3%</td></tr>
+              <tr><td>nuScenes language steering</td><td>Target reachability</td><td>76.0%</td><td>iMotion-LLM: 68.3%</td></tr>
+            </tbody>
+          </table>
         </div>
+        <p class="note">
+          Scene-edit and language-steering scores are open-loop best-of-six reachability: a predicted
+          path succeeds if it comes within 1 m of the annotated target. nuScenes-QA methods use
+          different input modalities.
+        </p>
       </section>
 
-      <section class="section tinted" id="method">
-        <div class="container">
-          <p class="eyebrow">How it works</p>
-          <h2>Encode the scene in the language model’s own token stream</h2>
-
-          <div class="pipeline" aria-label="VectorLLM processing pipeline">
-            <div><strong>Vectorize</strong><span>maps and motion</span></div>
-            <span aria-hidden="true">&rarr;</span>
-            <div><strong>Discretize</strong><span>into vector tokens</span></div>
-            <span aria-hidden="true">&rarr;</span>
-            <div><strong>Serialize</strong><span>with language</span></div>
-            <span aria-hidden="true">&rarr;</span>
-            <div><strong>Reason</strong><span>and generate</span></div>
-          </div>
-
-          <div class="method-grid">
-            <article>
-              <h3>1. Ego-centric vectorization</h3>
-              <p>
-                Coordinates are translated and rotated into the ego vehicle’s local frame. Static
-                map polylines and dynamic agent histories are both expressed as ordered
-                two-dimensional displacement vectors. Local map context is filtered around the ego
-                trajectory, and curvature-adaptive resampling uses shorter segments in curved
-                regions and longer segments on near-straight roads.
-              </p>
-            </article>
-            <article>
-              <h3>2. Discrete scene vocabulary</h3>
-              <p>
-                A k-disks procedure builds a 1,024-token vocabulary of displacement vectors from
-                WOMD. Beam-search assignment limits reconstruction drift along long polylines;
-                road and trajectory polylines are reconstructed with error below 0.03 m. Semantic
-                markers distinguish maps, roads, ego motion, and agents, while
-                delimiter tokens mark sequence boundaries.
-              </p>
-            </article>
-            <article>
-              <h3>3. One serialized context</h3>
-              <p>
-                Map blocks, ego history, surrounding-agent histories, and an optional question or
-                instruction are concatenated into one sequence. The original language vocabulary
-                is preserved; vector and special tokens expand both the input embedding matrix and
-                the language-model output head.
-              </p>
-            </article>
-            <article>
-              <h3>4. LLM-centered architecture</h3>
-              <p>
-                A pretrained decoder-only LLM processes the shared sequence. The model adds vector
-                and semantic tokens to its vocabulary and fully fine-tunes the LLM, with no separate
-                scene encoder or feature projector.
-              </p>
-            </article>
-            <article>
-              <h3>5. Grounded chain of thought</h3>
-              <p>
-                Reasoning traces follow a driving-oriented sequence: identify ego motion, select
-                relevant map and nearby-agent evidence, reason about interactions and feasible
-                maneuvers, then support the answer or trajectory. Vector-token references keep the
-                intermediate reasoning tied to the serialized scene.
-              </p>
-            </article>
-            <article>
-              <h3>6. Goal-conditioned trajectory decoding</h3>
-              <p>
-                A goal head predicts sparse future waypoints. Trajectory positions then attend to
-                one another and are decoded in parallel as vector tokens, which are mapped back to
-                displacement vectors and accumulated into metric coordinates.
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" id="training">
-        <div class="container">
-          <p class="eyebrow">Training</p>
-          <h2>Learn scene structure first, then solve driving tasks</h2>
-          <div class="cards two-column">
-            <article class="card">
-              <h3>Stage I · Vector-token pretraining</h3>
-              <p>
-                Standard next-token prediction over serialized driving scenes exposes the
-                pretrained LLM to map and motion structures as ordinary token sequences.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Stage II · Multi-task fine-tuning</h3>
-              <p>
-                Question answering, goal prediction, and trajectory generation are trained
-                together. Language and vector outputs use cross-entropy; the continuous waypoint
-                goal head uses an L2 loss.
-              </p>
-            </article>
-          </div>
-
-          <h3>Grounded supervision generation</h3>
-          <p>
-            WOMD supplies map elements, agent histories, and future trajectories. A deterministic
-            pipeline extracts motion events, map context, spatial relations, interactions, counts,
-            and goal-oriented cues. Rule-based analysis determines the labels and relevant scene
-            evidence; Qwen3-4B-Instruct-2507 only paraphrases those facts into natural-language QA
-            pairs and reasoning traces. It is not asked to infer geometry or behavior from raw
-            trajectories.
-          </p>
-          <div class="callout">
-            <strong>Reference implementation setting</strong>
-            <p>
-              The main experiments use Qwen3-0.6B, a 1,024-token scene vocabulary, and a
-              12,288-token training context. Only 0.6% of WOMD training scenes exceed that context
-              limit and are dropped.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section class="section tinted" id="evaluation">
-        <div class="container">
-          <p class="eyebrow">Evaluation</p>
-          <h2>Test scene understanding and behavior change</h2>
-          <p class="section-intro">
-            We evaluate language grounding on WOMD-Reasoning and nuScenes-QA. To test
-            controllability, we introduce two human-annotated counterfactual benchmarks: 300 WOMD
-            validation scenes with edits to lane geometry, agents, or ego history, and 200 nuScenes
-            test scenes with alternative feasible driving instructions. These counterfactual sets
-            are held out; VectorLLM receives no task-specific counterfactual training.
-          </p>
-          <div class="cards">
-            <article class="card">
-              <h3>Question answering</h3>
-              <p>Answer scene-dependent questions about map geometry, motion, and agent interactions.</p>
-            </article>
-            <article class="card">
-              <h3>Scene edits</h3>
-              <p>Change the map, nearby agents, or ego history and measure whether the planned response follows.</p>
-            </article>
-            <article class="card">
-              <h3>Language steering</h3>
-              <p>Keep the scene fixed, change the instruction, and test whether generated trajectories follow it.</p>
-            </article>
-          </div>
-          <p class="metric-note">
-            Controllability is measured as best-of-six target reachability: a generated trajectory
-            succeeds when it passes within 1.0 m of the human-annotated target waypoint at its
-            specified horizon. VectorLLM+MapTR replaces annotated HD maps with map vectors predicted
-            from multiview images by a pretrained MapTR model.
-          </p>
-        </div>
-      </section>
-
-      <section class="section" id="results">
-        <div class="container">
-          <p class="eyebrow">Results</p>
-          <h2>Discrete scene tokens improve grounding and control</h2>
-          <p class="section-intro">
-            VectorLLM outperforms the evaluated baselines on both question-answering benchmarks and
-            on held-out counterfactual scene edits and language steering. With MapTR-predicted maps,
-            performance remains competitive, showing the approach can use perception-derived vectors.
-          </p>
-
-          <h3>Driving question answering</h3>
-          <div class="results-grid">
-            <div class="table-wrap">
-              <table>
-                <caption>WOMD-Reasoning</caption>
-                <thead><tr><th>Method</th><th>Acc<sub>1.0</sub> ↑</th><th>ROUGE ↑</th></tr></thead>
-                <tbody>
-                  <tr><td>Motion-LLaVA</td><td>56.2%</td><td>0.792</td></tr>
-                  <tr class="highlight"><td>VectorLLM</td><td>61.0%</td><td>0.804</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <caption>nuScenes-QA</caption>
-                <thead><tr><th>Method</th><th>Input</th><th>H0 ↑</th><th>H1 ↑</th><th>Overall ↑</th></tr></thead>
-                <tbody>
-                  <tr><td>LLaMA-Adapter V2</td><td>Vision</td><td>15.1</td><td>4.8</td><td>9.6</td></tr>
-                  <tr><td>LLaVA 1.5</td><td>Vision</td><td>25.7</td><td>41.5</td><td>26.2</td></tr>
-                  <tr><td>OpenDriveVLA-0.5B</td><td>Vision</td><td>62.3</td><td>56.5</td><td>58.4</td></tr>
-                  <tr class="highlight"><td>VectorLLM</td><td>HD map</td><td>69.9</td><td>60.4</td><td>63.5</td></tr>
-                  <tr><td>VectorLLM+MapTR</td><td>MapTR</td><td>61.7</td><td>55.9</td><td>57.8</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <h3>Responding to edited scenes</h3>
-          <p>Best-of-six target reachability (%) on the WOMD human-annotated scene-edit benchmark.</p>
-          <div class="table-wrap">
-            <table>
-              <caption>WOMD scene edits · target reachability ↑</caption>
-              <thead><tr><th>Method</th><th>Input</th><th>Lane</th><th>Agent</th><th>Ego history</th><th>Overall</th></tr></thead>
-              <tbody>
-                <tr><td>MTR</td><td>HD map</td><td>47.0%</td><td>52.0%</td><td>61.0%</td><td>53.3%</td></tr>
-                <tr><td>M2I</td><td>HD map</td><td>39.0%</td><td>35.0%</td><td>18.0%</td><td>30.7%</td></tr>
-                <tr class="highlight"><td>VectorLLM</td><td>HD map</td><td>65.0%</td><td>60.0%</td><td>69.0%</td><td>64.7%</td></tr>
-                <tr><td>VectorLLM+MapTR</td><td>MapTR</td><td>61.5%</td><td>57.0%</td><td>63.0%</td><td>60.5%</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h3>Following alternative language instructions</h3>
-          <p>Best-of-six target reachability (%) on the nuScenes human-annotated language-steering benchmark.</p>
-          <div class="table-wrap">
-            <table>
-              <caption>nuScenes language steering · target reachability ↑</caption>
-              <thead><tr><th>Method</th><th>Input</th><th>Language</th><th>Average</th><th>@1 s</th><th>@2 s</th><th>@3 s</th></tr></thead>
-              <tbody>
-                <tr><td>VectorLLM</td><td>HD map</td><td>No</td><td>29.8%</td><td>49.0%</td><td>30.5%</td><td>10.0%</td></tr>
-                <tr><td>CTG++</td><td>HD map</td><td>Yes</td><td>15.0%</td><td>31.5%</td><td>11.0%</td><td>2.5%</td></tr>
-                <tr><td>iMotion-LLM</td><td>HD map</td><td>Yes</td><td>68.3%</td><td>80.0%</td><td>71.5%</td><td>53.5%</td></tr>
-                <tr class="highlight"><td>VectorLLM</td><td>HD map</td><td>Yes</td><td>76.0%</td><td>93.5%</td><td>80.0%</td><td>64.5%</td></tr>
-                <tr><td>VectorLLM+MapTR</td><td>MapTR</td><td>Yes</td><td>71.8%</td><td>89.0%</td><td>78.5%</td><td>58.0%</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="metric-note">
-            Without the language instruction, target reachability falls from 76.0% to 29.8%.
-            Changing only the requested maneuver therefore substantially changes the generated
-            behavior in this open-loop evaluation.
-          </p>
-        </div>
-      </section>
-
-      <section class="section tinted" id="analysis">
-        <div class="container">
-          <p class="eyebrow">What drives the results</p>
-          <h2>Discrete tokens and useful reasoning both matter</h2>
-          <p class="section-intro">
-            Two controlled comparisons isolate the representation and the inference-time reasoning.
-            Continuous scene embeddings underperform when the scene input is held constant, and
-            incorrect or missing reasoning lowers both QA and instruction-steering scores.
-          </p>
-          <div class="table-wrap">
-            <table>
-              <caption>Scene representation ablation · WOMD-Reasoning and counterfactual evaluations</caption>
-              <thead>
-                <tr>
-                  <th>Method</th>
-                  <th>QA Acc<sub>1.0</sub> ↑</th>
-                  <th>Scene edit ↑</th>
-                  <th>Language steering ↑</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="highlight"><td>VectorLLM · discrete tokens</td><td>61.0%</td><td>64.7%</td><td>76.0%</td></tr>
-                <tr><td>GameFormer + Qwen · continuous features</td><td>51.3%</td><td>54.0%</td><td>46.3%</td></tr>
-                <tr><td>Token Encoder + Qwen · continuous embeddings</td><td>47.6%</td><td>39.3%</td><td>50.7%</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h3>Inference-time chain-of-thought ablation</h3>
-          <p>All rows use the same trained model; only the reasoning provided at inference changes.</p>
-          <div class="table-wrap">
-            <table>
-              <caption>Effect of reasoning quality on QA and controllability</caption>
-              <thead><tr><th>Setting</th><th>QA Acc<sub>1.0</sub> ↑</th><th>ROUGE ↑</th><th>Language steering ↑</th><th>Scene edit ↑</th></tr></thead>
-              <tbody>
-                <tr class="highlight"><td>Full CoT</td><td>61.0%</td><td>0.804</td><td>76.0%</td><td>64.7%</td></tr>
-                <tr><td>Corrupted CoT</td><td>53.7%</td><td>0.715</td><td>70.3%</td><td>60.7%</td></tr>
-                <tr><td>No CoT</td><td>51.2%</td><td>0.712</td><td>66.7%</td><td>58.0%</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="analysis-grid">
-            <article>
-              <h3>Latent-space alignment</h3>
-              <p>
-                t-SNE visualizations place maneuver language near related trajectory tokens and
-                map-context language near relevant map tokens. This is qualitative evidence that
-                the shared context learns semantically meaningful vector-language relationships.
-              </p>
-            </article>
-            <article>
-              <h3>Attention-based grounding</h3>
-              <p>
-                Selected language tokens attend to scene regions relevant to the question or
-                instruction, and the attended regions shift under counterfactual commands. The
-                paper treats these maps as qualitative grounding evidence, not definitive causal
-                attribution.
-              </p>
-            </article>
-            <article>
-              <h3>Unseen scene captioning</h3>
-              <p>
-                Without captioning supervision, the model can produce descriptions combining ego
-                motion, road context, and nearby-agent interactions. This is presented as
-                qualitative generalization rather than a benchmarked captioning result.
-              </p>
-            </article>
-            <article>
-              <h3>What attention reveals</h3>
-              <p>
-                Attention shifts toward relevant road geometry and agents as the question,
-                instruction, or scene changes. The paper presents these visualizations as
-                qualitative evidence of grounding, not causal proof.
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" id="limitations">
-        <div class="container narrow">
-          <p class="eyebrow">Limitations</p>
-          <h2>What this evaluation does and does not establish</h2>
-          <ul class="limitations-list">
-            <li>
-              <strong>Structured inputs are assumed.</strong> The main model consumes vectorized
-              HD-map elements; MapTR-predicted maps test a perception-based input, but the paper
-              does not jointly train raw perception and language control.
-            </li>
-            <li>
-              <strong>Open-loop reachability is not closed-loop safety.</strong> The counterfactual
-              score checks whether one of six predicted paths reaches an annotated waypoint; it
-              does not establish safe behavior during closed-loop driving.
-            </li>
-            <li>
-              <strong>The counterfactual sets are limited in scope.</strong> They contain 300
-              edited WOMD scenes and 200 nuScenes instruction scenes, annotated by 15 people.
-            </li>
-            <li>
-              <strong>Some evidence is qualitative.</strong> Attention maps, latent-space
-              visualizations, and unseen-scene captions illustrate behavior but are not
-              independently scored benchmarks.
-            </li>
-          </ul>
-        </div>
+      <section id="limitations">
+        <h2>Limitations</h2>
+        <p>
+          The method expects vectorized maps and agent histories. The counterfactual results measure
+          open-loop waypoint reachability, not closed-loop driving safety. Attention maps and scene
+          captions are qualitative examples rather than causal explanations or scored benchmarks.
+        </p>
       </section>
     </main>
 
-    <footer class="site-footer">
-      <div class="container">
-        <p>VectorLLM · Language-Controllable Autonomous Driving via Vectorized Scene Grounding</p>
-        <a href="static/papers/vectorllm.pdf">Paper PDF</a>
-      </div>
+    <footer class="content site-footer">
+      <p>VectorLLM · <a href="static/papers/vectorllm.pdf">Read the paper</a></p>
     </footer>
-
-    <script src="static/js/index.js"></script>
   </body>
 </html>

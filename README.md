@@ -14,16 +14,11 @@ The paper is available at `static/papers/vectorllm.pdf`.
 
 ## Website content
 
-- Motivation and contributions
-- Scene vectorization and tokenization
-- LLM architecture and trajectory generation
-- Training and grounded supervision generation
-- Evaluation tasks and datasets
-- Language-grounding results
-- Scene-edit and language-instruction controllability
-- Trajectory-forecasting results
-- Chain-of-thought, grounding, and scaling analyses
-- Limitations
+- Short paper summary
+- Driving question-answering examples
+- Scene and instruction counterfactual examples
+- Unseen-scene captions
+- Concise method, results, and limitations
 
 ## Local preview
 
