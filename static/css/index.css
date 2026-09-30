@@ -40,10 +40,6 @@ figure img {
   height: auto;
 }
 
-.qa-example-image {
-  max-width: 900px;
-}
-
 figcaption {
   margin-top: .5rem;
   color: #555;

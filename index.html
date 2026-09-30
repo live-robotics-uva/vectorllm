@@ -60,62 +60,6 @@
       </div>
     </section>
 
-    <section class="hero teaser" id="examples">
-      <div class="container is-max-desktop">
-        <div class="hero-body">
-          <h2 class="title is-3">Question answering on driving scenes</h2>
-          <div class="content has-text-centered">
-            <figure>
-              <img class="qa-example-image" src="static/examples/qa-turn-attention.jpg"
-                   alt="Bird's-eye driving scene at an intersection, with the ego route and model attention locations highlighted."
-                   loading="lazy">
-              <figcaption>
-                Scene and attention visualization for a question about the ego vehicle's turn.
-              </figcaption>
-            </figure>
-          </div>
-          <div class="content has-text-justified qa-answers">
-            <p><strong>Question:</strong> Does the ego vehicle make any turns?<br>
-               <strong>Generated answer:</strong> Yes. The ego car turns left from 4.1 to 9.0 seconds.</p>
-            <p><strong>Question:</strong> Does the ego car encounter an intersection?<br>
-               <strong>Generated answer:</strong> Yes. It passes an intersection from 2.6 to 7.2 seconds.</p>
-            <p><strong>Question:</strong> Are any other agents moving like the ego vehicle?<br>
-               <strong>Generated answer:</strong> Yes. Agents 7 and 12 are turning left, like the ego car.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="control">
-      <div class="container is-max-desktop">
-        <h2 class="title is-3">Following a changed instruction</h2>
-        <div class="content has-text-justified">
-          <p>
-            The scene stays the same while the requested maneuver changes. The examples visualize
-            different predicted paths and attended scene locations for each instruction.
-          </p>
-        </div>
-        <div class="columns">
-          <div class="column">
-            <figure class="content has-text-centered">
-              <img src="static/examples/original-left-turn.jpg"
-                   alt="Intersection scene showing the response to an instruction to enter and turn left."
-                   loading="lazy">
-              <figcaption><strong>Instruction:</strong> The ego car enters the intersection and makes a left turn.</figcaption>
-            </figure>
-          </div>
-          <div class="column">
-            <figure class="content has-text-centered">
-              <img src="static/examples/counterfactual-slow-turn.jpg"
-                   alt="The same intersection with a changed path after asking the ego vehicle to slow before turning."
-                   loading="lazy">
-              <figcaption><strong>Counterfactual instruction:</strong> The ego car slows down before turning at the intersection.</figcaption>
-            </figure>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <section class="section" id="captions">
       <div class="container is-max-desktop">
         <h2 class="title is-3">Describing unseen scenes</h2>
@@ -168,24 +112,180 @@
 
     <section class="section" id="results">
       <div class="container is-max-desktop">
-        <h2 class="title is-3">Selected results</h2>
+        <h2 class="title is-3">Results</h2>
+        <p class="content has-text-justified">
+          Acc@1.0m measures QA accuracy within one meter. Counterfactual reachability is open-loop
+          best-of-six: a prediction succeeds when one trajectory comes within one meter of the
+          annotated target at its evaluation horizon.
+        </p>
+
+        <h3 class="title is-4">WOMD-Reasoning QA</h3>
         <div class="table-container">
           <table class="table is-fullwidth is-striped research-table">
             <thead>
-              <tr><th>Evaluation</th><th>Metric</th><th>VectorLLM</th><th>Comparison</th></tr>
+              <tr><th scope="col">Method</th><th scope="col">Modality</th><th scope="col">Acc@1.0m</th><th scope="col">ROUGE</th></tr>
             </thead>
             <tbody>
-              <tr><td>WOMD-Reasoning QA</td><td>Accuracy within 1 m</td><td>61.0%</td><td>Motion-LLaVA: 56.2%</td></tr>
-              <tr><td>nuScenes-QA</td><td>Overall accuracy</td><td>63.5%</td><td>OpenDriveVLA-0.5B: 58.4%</td></tr>
-              <tr><td>WOMD scene edits</td><td>Target reachability</td><td>64.7%</td><td>MTR: 53.3%</td></tr>
-              <tr><td>nuScenes language steering</td><td>Target reachability</td><td>76.0%</td><td>iMotion-LLM: 68.3%</td></tr>
+              <tr><th scope="row">Motion-LLaVA</th><td>HD map</td><td>56.2%</td><td>0.792</td></tr>
+              <tr><th scope="row">VectorLLM</th><td>HD map</td><td>61.0%</td><td>0.804</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="table-caption has-text-centered">
-          Counterfactual reachability is open-loop best-of-six: a prediction succeeds when it comes
-          within 1 m of the annotated target. nuScenes-QA methods use different input modalities.
-        </p>
+
+        <h3 class="title is-4">nuScenes-QA</h3>
+        <div class="table-container">
+          <table class="table is-fullwidth is-striped research-table">
+            <thead>
+              <tr><th scope="col">Method</th><th scope="col">Modality</th><th scope="col">H0</th><th scope="col">H1</th><th scope="col">Overall accuracy</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">LLaMA-AdapV2</th><td>Vision</td><td>15.1%</td><td>4.8%</td><td>9.6%</td></tr>
+              <tr><th scope="row">LLaVA1.5</th><td>Vision</td><td>25.7%</td><td>41.5%</td><td>26.2%</td></tr>
+              <tr><th scope="row">OpenDriveVLA-0.5B</th><td>Vision</td><td>62.3%</td><td>56.5%</td><td>58.4%</td></tr>
+              <tr><th scope="row">VectorLLM</th><td>HD map</td><td>69.9%</td><td>60.4%</td><td>63.5%</td></tr>
+              <tr><th scope="row">VectorLLM + MapTR</th><td>Vision (MapTR)</td><td>61.7%</td><td>55.9%</td><td>57.8%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-caption">H0 and H1 denote zero-hop and one-hop questions. Methods use different input modalities.</p>
+
+        <h3 class="title is-4">Counterfactual scene edits on WOMD</h3>
+        <div class="table-container">
+          <table class="table is-fullwidth is-striped research-table">
+            <thead>
+              <tr><th scope="col">Method</th><th scope="col">Modality</th><th scope="col">Lane edits</th><th scope="col">Agent edits</th><th scope="col">Ego-history edits</th><th scope="col">Overall</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">MTR</th><td>HD map</td><td>47.0%</td><td>52.0%</td><td>61.0%</td><td>53.3%</td></tr>
+              <tr><th scope="row">M2I</th><td>HD map</td><td>39.0%</td><td>35.0%</td><td>18.0%</td><td>30.7%</td></tr>
+              <tr><th scope="row">VectorLLM</th><td>HD map</td><td>65.0%</td><td>60.0%</td><td>69.0%</td><td>64.7%</td></tr>
+              <tr><th scope="row">VectorLLM + MapTR</th><td>Vision (MapTR)</td><td>61.5%</td><td>57.0%</td><td>63.0%</td><td>60.5%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-caption">Values are open-loop best-of-six target reachability at a 1.0 m tolerance.</p>
+
+        <h3 class="title is-4">Counterfactual language steering on nuScenes</h3>
+        <div class="table-container">
+          <table class="table is-fullwidth is-striped research-table">
+            <thead>
+              <tr><th scope="col">Method</th><th scope="col">Modality</th><th scope="col">Language instruction</th><th scope="col">Average</th><th scope="col">At 1 s</th><th scope="col">At 2 s</th><th scope="col">At 3 s</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">VectorLLM</th><td>HD map</td><td>No</td><td>29.8%</td><td>49.0%</td><td>30.5%</td><td>10.0%</td></tr>
+              <tr><th scope="row">CTG++</th><td>HD map</td><td>Yes</td><td>15.0%</td><td>31.5%</td><td>11.0%</td><td>2.5%</td></tr>
+              <tr><th scope="row">iMotion-LLM</th><td>HD map</td><td>Yes</td><td>68.3%</td><td>80.0%</td><td>71.5%</td><td>53.5%</td></tr>
+              <tr><th scope="row">VectorLLM</th><td>HD map</td><td>Yes</td><td>76.0%</td><td>93.5%</td><td>80.0%</td><td>64.5%</td></tr>
+              <tr><th scope="row">VectorLLM + MapTR</th><td>Vision (MapTR)</td><td>Yes</td><td>71.8%</td><td>89.0%</td><td>78.5%</td><td>58.0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-caption">Values are open-loop best-of-six target reachability at a 1.0 m tolerance.</p>
+
+        <h3 class="title is-4">Scene-representation ablation</h3>
+        <div class="table-container">
+          <table class="table is-fullwidth is-striped research-table">
+            <thead>
+              <tr><th scope="col">Method</th><th scope="col">Modality</th><th scope="col">WOMD QA</th><th scope="col">Scene edits</th><th scope="col">Language steering</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">VectorLLM</th><td>HD map</td><td>61.0%</td><td>64.7%</td><td>76.0%</td></tr>
+              <tr><th scope="row">GameFormer + Qwen</th><td>HD map</td><td>51.3%</td><td>54.0%</td><td>46.3%</td></tr>
+              <tr><th scope="row">Token Encoder + Qwen</th><td>HD map</td><td>47.6%</td><td>39.3%</td><td>50.7%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-caption">QA is WOMD-Reasoning Acc@1.0m; the other columns are average best-of-six reachability.</p>
+
+        <h3 class="title is-4">Inference-time chain-of-thought ablation</h3>
+        <div class="table-container">
+          <table class="table is-fullwidth is-striped research-table">
+            <thead>
+              <tr><th scope="col">Setting</th><th scope="col">WOMD QA Acc@1.0m</th><th scope="col">ROUGE</th><th scope="col">Language steering</th><th scope="col">Scene edits</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">VectorLLM with full CoT</th><td>61.0%</td><td>0.804</td><td>76.0%</td><td>64.7%</td></tr>
+              <tr><th scope="row">With corrupted CoT</th><td>53.7%</td><td>0.715</td><td>70.3%</td><td>60.7%</td></tr>
+              <tr><th scope="row">Without CoT</th><td>51.2%</td><td>0.712</td><td>66.7%</td><td>58.0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="title is-4">Backbone scaling</h3>
+        <figure class="content has-text-centered">
+          <img src="static/results/backbone-scaling.png"
+               alt="Average language-steering target reachability increases with backbone size for Gemma-3 and Qwen3."
+               loading="lazy">
+          <figcaption>Average target reachability on language steering across Gemma-3 and Qwen3 backbone sizes.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="hero teaser" id="examples">
+      <div class="container is-max-desktop">
+        <div class="hero-body">
+          <h2 class="title is-3">Question-specific attention</h2>
+          <p class="content has-text-justified">
+            Each map shows attention for its own question. The highlighted vector tokens shift
+            with the task; red points mark high-attention locations.
+          </p>
+          <div class="columns">
+            <div class="column">
+              <h3 class="title is-5">Does the ego vehicle make any turns throughout the scene?</h3>
+              <figure class="content has-text-centered">
+                <img src="static/examples/qa-turn-attention.jpg"
+                     alt="Driving-scene attention map for the question about whether the ego vehicle turns."
+                     loading="lazy">
+                <figcaption>Answer: Yes. The ego car turns left from 4.1 to 9.0 seconds.</figcaption>
+              </figure>
+            </div>
+            <div class="column">
+              <h3 class="title is-5">Does the ego car encounter an intersection throughout the scene?</h3>
+              <figure class="content has-text-centered">
+                <img src="static/examples/qa-intersection-attention.jpg"
+                     alt="Driving-scene attention map for the question about whether the ego car encounters an intersection."
+                     loading="lazy">
+                <figcaption>Answer: Yes. The ego car passes an intersection from 2.6 to 7.2 seconds.</figcaption>
+              </figure>
+            </div>
+            <div class="column">
+              <h3 class="title is-5">Are there any other agents that have similar motion to the ego vehicle?</h3>
+              <figure class="content has-text-centered">
+                <img src="static/examples/qa-agent-motion-attention.jpg"
+                     alt="Driving-scene attention map for the question about agents whose motion resembles the ego vehicle's."
+                     loading="lazy">
+                <figcaption>Answer: Yes. Agents 7 and 12 are turning left, similar to the ego car.</figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="control">
+      <div class="container is-max-desktop">
+        <h2 class="title is-3">Following a changed instruction</h2>
+        <div class="content has-text-justified">
+          <p>The scene stays fixed as the requested maneuver changes; the predicted path and attended scene locations change with the instruction.</p>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <figure class="content has-text-centered">
+              <img src="static/examples/original-left-turn.jpg"
+                   alt="Attention and predicted path for an instruction to enter the intersection and turn left."
+                   loading="lazy">
+              <figcaption><strong>Instruction:</strong> The ego car enters the intersection and makes a left turn.</figcaption>
+            </figure>
+          </div>
+          <div class="column">
+            <figure class="content has-text-centered">
+              <img src="static/examples/counterfactual-slow-turn.jpg"
+                   alt="Attention and changed predicted path for an instruction to slow down before turning at the intersection."
+                   loading="lazy">
+              <figcaption><strong>Counterfactual instruction:</strong> The ego car slows down before making a turn at the intersection.</figcaption>
+            </figure>
+          </div>
+        </div>
       </div>
     </section>
 
