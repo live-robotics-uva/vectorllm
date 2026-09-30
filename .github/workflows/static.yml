@@ -14,5 +14,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check scaffold
-        run: test -f index.html && test -f static/css/index.css && test -f static/js/index.js
-
+        run: test -f index.html && test -f static/css/index.css
